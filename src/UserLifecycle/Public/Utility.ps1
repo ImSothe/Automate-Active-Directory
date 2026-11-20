@@ -33,7 +33,7 @@ function Get-LifecycleAuditLog {
     if (-not (Test-Path -LiteralPath $path)) { return }
     $entries = New-Object System.Collections.ArrayList
     $n = 0
-    foreach ($line in [System.IO.File]::ReadLines($path, [System.Text.Encoding]::UTF8)) {
+    foreach ($line in (Read-LcLogLines $path)) {
         $n++
         if (-not $line.Trim()) { continue }
         try { $e = $line | ConvertFrom-Json } catch { Write-Warning "Línea $n del log no es JSON válido."; continue }
@@ -66,7 +66,7 @@ function Test-LifecycleAuditLog {
     }
     $expected = 'GENESIS'
     $n = 0; $entries = 0
-    foreach ($line in [System.IO.File]::ReadLines($path, [System.Text.Encoding]::UTF8)) {
+    foreach ($line in (Read-LcLogLines $path)) {
         $n++
         if (-not $line.Trim()) { continue }
         $prevHash = $null

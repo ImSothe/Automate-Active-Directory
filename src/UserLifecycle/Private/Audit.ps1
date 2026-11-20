@@ -74,11 +74,20 @@ function Get-LcAuditLogPath {
     return (Join-Path $script:Lc.Config.Audit.Path 'audit-log.jsonl')
 }
 
+function Read-LcLogLines {
+    # Lee el log completo y CIERRA el fichero antes de devolver nada.
+    # (File.ReadLines + 'return' a mitad del foreach dejaba el fichero abierto: en Windows eso
+    # bloqueaba el log y la siguiente operación no podía escribir en él.)
+    param([string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) { return @() }
+    return [System.IO.File]::ReadAllLines($Path, [System.Text.Encoding]::UTF8)
+}
+
 function Get-LcLastLogLine {
     param([string]$Path)
     if (-not (Test-Path -LiteralPath $Path)) { return $null }
     $last = $null
-    foreach ($line in [System.IO.File]::ReadLines($Path, [System.Text.Encoding]::UTF8)) {
+    foreach ($line in (Read-LcLogLines $Path)) {
         if ($line.Trim()) { $last = $line }
     }
     return $last

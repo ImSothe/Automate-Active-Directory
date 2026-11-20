@@ -134,6 +134,8 @@ $lines[1] = $lines[1] -replace '"Operator":"[^"]*"', '"Operator":"someone-else"'
 [System.IO.File]::WriteAllLines($logPath, $lines)
 $v = Test-LifecycleAuditLog
 Assert-True (-not $v.Valid -and $v.BrokenAtLine -eq 3) "Tampering detected: $($v.Message)"
+$after = New-LifecycleUser -GivenName 'Tras' -Surname 'Verificacion' -Department 'Ventas' -Title 'Comercial' -Confirm:$false
+Assert-True ($after.Status -eq 'Success') 'Log is not left locked after a failed verification (new operation can be written)'
 
 Remove-Item -Recurse -Force $work
 Write-Host ("`n{0} passed, {1} failed`n" -f $script:passed, $script:failures) -ForegroundColor $(if ($script:failures) { 'Red' } else { 'Green' })

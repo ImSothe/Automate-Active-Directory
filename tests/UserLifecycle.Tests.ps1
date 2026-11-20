@@ -198,4 +198,11 @@ Describe 'Audit log' {
         $v.Valid | Should -BeFalse
         $v.BrokenAtLine | Should -Be 2
     }
+
+    It 'does not leave the log locked after a failed verification (Windows file locking)' {
+        $null = Test-LifecycleAuditLog
+        $r = New-LifecycleUser -GivenName 'Tras' -Surname 'Verificacion' -Department 'Ventas' -Title 'Comercial' -Confirm:$false
+        $r.Status | Should -Be 'Success'
+        { [System.IO.File]::Open((Join-Path (Join-Path $script:work 'audit') 'audit-log.jsonl'), 'Open', 'ReadWrite', 'None').Dispose() } | Should -Not -Throw
+    }
 }
