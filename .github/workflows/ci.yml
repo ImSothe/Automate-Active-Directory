@@ -39,9 +39,9 @@ jobs:
           $cfg.Output.Verbosity = 'Detailed'
           Invoke-Pester -Configuration $cfg
 
-      - name: PSScriptAnalyzer (errors only)
+      - name: PSScriptAnalyzer
         if: matrix.shell == 'pwsh' && matrix.os == 'ubuntu-latest'
         run: |
-          $issues = Invoke-ScriptAnalyzer -Path ./src -Recurse -Severity Error
+          $issues = foreach ($p in './src', './scripts', './tests') { Invoke-ScriptAnalyzer -Path $p -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 }
           $issues | Format-Table -AutoSize
           if ($issues) { exit 1 }

@@ -1,8 +1,8 @@
 <div align="center">
 
-# User Lifecycle Automator
+# Automate-Active-Directory
 
-**Automated employee onboarding & offboarding for Active Directory, file shares and Microsoft 365**
+**Automated employee onboarding & offboarding (joiners / leavers) for Active Directory, file shares and Microsoft 365**
 
 Type a name, a department and a job title → get a correctly placed AD account, the right groups,<br>
 folder permissions, Microsoft 365 licences and a tamper-evident audit report. In seconds, the same way every time.
@@ -100,8 +100,8 @@ A leaver's account that still works, or a new hire who lands in *Domain Admins* 
 Requirements: PowerShell 7+ (Windows, Linux or macOS) or Windows PowerShell 5.1.
 
 ```powershell
-git clone https://github.com/<your-user>/user-lifecycle-automator.git
-cd user-lifecycle-automator
+git clone https://github.com/<your-user>/Automate-Active-Directory.git
+cd Automate-Active-Directory
 ./scripts/Start-UI.ps1
 ```
 
@@ -235,12 +235,22 @@ Each operation writes:
 
 ## Testing
 
+| Suite | What it covers | Tests |
+| --- | --- | --- |
+| `tests/Invoke-SmokeTest.ps1` | End-to-end in Lab mode, **zero dependencies** (runs anywhere) | 47 checks |
+| `tests/UserLifecycle.Tests.ps1` | Naming, passwords, onboarding, offboarding, audit chain (Lab mode) | 27 |
+| `tests/Backends.Tests.ps1` | **Active Directory and Microsoft Graph backends with mocked cmdlets**: exact `New-ADUser` parameters, privileged groups by SID in a Spanish DC (`Admins. del dominio`), `adminCount`, LDAP escaping, inclusive expiry date, Graph endpoints and request bodies, partial failures | 25 |
+| `tests/WebUI.Tests.ps1` | Starts the **real web server** and attacks it: missing/wrong token, forged `Host` (DNS rebinding), cross-origin POST (CSRF), form posts, oversized and chunked bodies, path traversal, then a full onboarding/offboarding through the API | 19 |
+
 ```powershell
-./tests/Invoke-SmokeTest.ps1      # 47 end-to-end checks in Lab mode, zero dependencies
-Invoke-Pester ./tests -Output Detailed   # Pester 5 suite
+./tests/Invoke-SmokeTest.ps1
+Invoke-Pester ./tests -Output Detailed
+Invoke-ScriptAnalyzer -Path ./src -Recurse -Settings ./PSScriptAnalyzerSettings.psd1
 ```
 
-GitHub Actions runs both on **Windows PowerShell 5.1**, **PowerShell 7 on Windows** and **PowerShell 7 on Ubuntu**, plus PSScriptAnalyzer.
+**Are the tests any good?** They were checked with *mutation testing*: 11 bugs were injected on purpose (remove the privileged-group block, drop LDAP escaping, disable the CSRF Origin check, remove `SameSite`, leak the password into the report, break the hash chain, skip session revocation…) and **every one of them made at least one test fail**.
+
+GitHub Actions runs everything on **Windows PowerShell 5.1**, **PowerShell 7 on Windows** and **PowerShell 7 on Ubuntu**, plus PSScriptAnalyzer (0 findings with the documented [settings](PSScriptAnalyzerSettings.psd1)).
 
 ## Project structure
 
@@ -256,7 +266,7 @@ GitHub Actions runs both on **Windows PowerShell 5.1**, **PowerShell 7 on Window
 │   └── Web/                         # dependency-free HTML/CSS/JS UI
 ├── scripts/                         # Start-UI.ps1, Invoke-BulkOnboarding.ps1
 ├── examples/                        # sample CSVs
-├── tests/                           # smoke test + Pester 5
+├── tests/                           # smoke test + Pester (Lab, mocked AD/Graph, web security)
 └── docs/img/                        # screenshots
 ```
 

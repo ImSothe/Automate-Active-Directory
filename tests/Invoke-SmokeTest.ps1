@@ -87,7 +87,7 @@ Assert-True ((@($intern.Licenses) -join ',') -eq 'O365_BUSINESS_ESSENTIALS') 'Ti
 $xss = Get-LifecycleOnboardingPlan -GivenName '<script>alert(1)</script>' -Surname 'X' -Department 'Ventas' -Title 'Comercial'
 Assert-True (-not $xss.CanProceed) 'Names with HTML/script characters are rejected'
 
-$what = New-LifecycleUser -GivenName 'Ana' -Surname 'Prueba' -Department 'Sistemas' -Title 'Técnica' -WhatIf
+$null = New-LifecycleUser -GivenName 'Ana' -Surname 'Prueba' -Department 'Sistemas' -Title 'Técnica' -WhatIf
 Assert-True ($null -eq (& $mod { Get-LcDirUser 'aprueba' })) '-WhatIf does not create anything'
 
 Write-Host "`nPrivileged access guard" -ForegroundColor Cyan
@@ -112,7 +112,7 @@ Assert-True ($null -ne (@($lab.Tenant.Users) | Where-Object { $_.UserPrincipalNa
 $json = Get-Content ($off.ReportPath -replace '\.html$', '.json') -Raw | ConvertFrom-Json
 Assert-True (@($json.Snapshot.Groups) -contains 'GG-Marketing') 'Snapshot of previous groups kept in report'
 
-$off2 = Disable-LifecycleUser -Identity 'jgarcial' -Confirm:$false
+$null = Disable-LifecycleUser -Identity 'jgarcial' -Confirm:$false
 $lab = & $mod { Read-LcLab }
 Assert-True (@($lab.Acls | Where-Object { $_.Identity -like '*jgarcial' -and $_.Path -notlike '*home$*' }).Count -eq 0) 'Share ACEs revoked on offboarding'
 Assert-True (@($lab.Acls | Where-Object { $_.Identity -like '*jgarcial' -and $_.Path -like '*home$*' }).Count -eq 1) 'Home folder kept for data retention'

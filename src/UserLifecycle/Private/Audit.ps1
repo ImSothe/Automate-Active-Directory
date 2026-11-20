@@ -11,7 +11,7 @@ function Get-LcOperator {
             return [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
         }
     }
-    catch { }
+    catch { Write-Verbose "WindowsIdentity no disponible: $($_.Exception.Message)" }
     return "$([System.Environment]::UserDomainName)\$([System.Environment]::UserName)"
 }
 

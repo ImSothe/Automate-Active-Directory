@@ -70,7 +70,7 @@ function Test-LifecycleAuditLog {
         $n++
         if (-not $line.Trim()) { continue }
         $prevHash = $null
-        try { $prevHash = ($line | ConvertFrom-Json).PrevHash } catch { }
+        try { $prevHash = ($line | ConvertFrom-Json).PrevHash } catch { $prevHash = $null }  # línea no JSON => cadena rota
         if ($prevHash -ne $expected) {
             return [pscustomobject]@{ Valid = $false; Entries = $entries; BrokenAtLine = $n; LastHash = $null; Message = "Cadena rota en la línea $n`: el log ha sido modificado (o la línea anterior se editó/borró)." }
         }

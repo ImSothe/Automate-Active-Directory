@@ -44,7 +44,7 @@
     Write-Host ''
 
     if (-not $NoBrowser -and [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT) {
-        try { Start-Process $url } catch { }
+        try { Start-Process $url } catch { Write-Verbose "No se pudo abrir el navegador: $($_.Exception.Message)" }
     }
 
     $state = @{ Token = $token; Port = $Port }
@@ -58,7 +58,8 @@
             }
             catch {
                 Write-Warning "Error atendiendo $($context.Request.HttpMethod) $($context.Request.Url.AbsolutePath): $($_.Exception.Message)"
-                try { Send-LcWebJson -Context $context -StatusCode 500 -Data @{ error = $_.Exception.Message } } catch { }
+                try { Send-LcWebJson -Context $context -StatusCode 500 -Data @{ error = $_.Exception.Message } }
+                catch { Write-Verbose "El cliente cerró la conexión: $($_.Exception.Message)" }
             }
         }
     }
@@ -282,11 +283,10 @@ function Invoke-LcApi {
 
         'POST /api/onboarding' {
             $b = Read-LcWebJsonBody $Context
-            $errs = $null
             $r = New-LifecycleUser -GivenName (Get-LcBodyValue $b 'givenName' 64) -Surname (Get-LcBodyValue $b 'surname' 64) `
                 -Department (Get-LcBodyValue $b 'department' 64) -Title (Get-LcBodyValue $b 'title' 64) -EmployeeId (Get-LcBodyValue $b 'employeeId' 16) `
                 -Manager (Get-LcBodyValue $b 'manager' 20) -EndDate (Get-LcBodyValue $b 'endDate' 10) -Ticket (Get-LcBodyValue $b 'ticket' 32) `
-                -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable errs -WarningAction SilentlyContinue
+                -Confirm:$false -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
             return (ConvertTo-LcWebResult $r)
         }
 
@@ -308,9 +308,8 @@ function Invoke-LcApi {
             $identity = Get-LcBodyValue $b 'identity' 20
             # Confirmación explícita: el cliente debe reenviar el nombre de usuario tecleado
             if ((Get-LcBodyValue $b 'confirm' 20) -cne $identity) { throw [System.IO.InvalidDataException]'La confirmación no coincide con el usuario.' }
-            $errs = $null
             $r = Disable-LifecycleUser -Identity $identity -Reason (Get-LcBodyValue $b 'reason' 200) -Ticket (Get-LcBodyValue $b 'ticket' 32) `
-                -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable errs -WarningAction SilentlyContinue
+                -Confirm:$false -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
             return (ConvertTo-LcWebResult $r)
         }
 
