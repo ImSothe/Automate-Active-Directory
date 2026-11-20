@@ -19,7 +19,7 @@ folder permissions, Microsoft 365 licences and a tamper-evident audit report. In
 
 ---
 
-> 📘 **Step-by-step guide (Spanish):** [docs/MANUAL.md](docs/MANUAL.md) — install, try it in Lab mode, build a free Active Directory test lab and connect Microsoft 365.
+> 📘 **Step-by-step guide (Spanish):** [docs/MANUAL.md](docs/MANUAL.md) · [PDF](docs/Manual-Automate-Active-Directory.pdf) — install, try it in Lab mode, build a free Active Directory test lab and connect Microsoft 365.
 
 ## Table of contents
 

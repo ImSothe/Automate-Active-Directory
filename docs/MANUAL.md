@@ -1,5 +1,7 @@
 # Manual de instalación y uso
 
+> También disponible en PDF: [Manual-Automate-Active-Directory.pdf](Manual-Automate-Active-Directory.pdf)
+
 Este manual te lleva de cero a tener la herramienta funcionando, en tres niveles. Haz el **nivel 1** hoy mismo (10 minutos); los otros dos cuando quieras probarla "de verdad".
 
 | Nivel | Qué pruebas | Qué necesitas | Tiempo |
