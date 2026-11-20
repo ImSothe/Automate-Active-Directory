@@ -54,7 +54,8 @@ Start-LifecycleWebUI -Port $($script:port) -NoBrowser
     $script:base = "http://localhost:$($script:port)"
 
     function Send-Request {
-        param([string]$Method = 'GET', [string]$Path, [hashtable]$Headers = @{}, [string]$Body, [string]$ContentType = 'application/json')
+        # $Body is untyped on purpose: [string] would turn $null into '' on Windows PowerShell 5.1 (and send a body with GET)
+        param([string]$Method = 'GET', [string]$Path, [hashtable]$Headers = @{}, $Body, [string]$ContentType = 'application/json')
         $req = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::new($Method), "$($script:base)$Path")
         foreach ($k in $Headers.Keys) {
             if ($k -eq 'Host') { $req.Headers.Host = $Headers[$k] } else { [void]$req.Headers.TryAddWithoutValidation($k, $Headers[$k]) }
@@ -149,8 +150,17 @@ Describe 'Web UI: API protections' {
         $res.Content.ReadAsStringAsync().GetAwaiter().GetResult() | Should -Match 'demasiado grande'
     }
 
-    It 'rejects path traversal when opening reports' {
+    It 'never serves files outside the reports folder (path traversal)' {
+        # Depending on the OS, http.sys / the managed listener may normalise or reject this URL before
+        # it reaches our code (400/403/404). What matters: it is never served.
         $r = Send-Request -Path '/reports/..%2f..%2fsettings.json' -Headers @{ Cookie = "lc_auth=$($script:token)" }
+        $r.Status | Should -BeIn @(400, 403, 404)
+        $r.Body | Should -Not -Match '"Mode"'
+    }
+
+    It 'only serves generated .html report names' {
+        # Reaches our own allow-list on every platform
+        $r = Send-Request -Path '/reports/audit-log.jsonl' -Headers @{ Cookie = "lc_auth=$($script:token)" }
         $r.Status | Should -Be 400
     }
 
