@@ -19,6 +19,8 @@ folder permissions, Microsoft 365 licences and a tamper-evident audit report. In
 
 ---
 
+> 📘 **Step-by-step guide (Spanish):** [docs/MANUAL.md](docs/MANUAL.md) — install, try it in Lab mode, build a free Active Directory test lab and connect Microsoft 365.
+
 ## Table of contents
 
 - [Why this project](#why-this-project)
@@ -143,6 +145,8 @@ Every directory, file-share and Graph call goes through a thin backend layer wit
 
 > ⚠️ Try it first in a test domain or a dedicated OU. Lab mode and the logic are covered by tests; the AD and Graph backends use the standard cmdlets/endpoints but must be validated in your environment.
 
+> The fastest way to get a test domain ready is [`scripts/Initialize-TestDomain.ps1`](scripts/Initialize-TestDomain.ps1): it creates the OUs, groups, shares and sample users your `settings.json` expects (idempotent, supports `-WhatIf`). Full walkthrough in the [manual](docs/MANUAL.md#3-nivel-2--laboratorio-con-active-directory-real).
+
 **1. Prerequisites**
 - A Windows machine joined to the domain with RSAT: `Add-WindowsCapability -Online -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0`
 - An account with delegated rights on the target OUs (create/move/disable users, manage group membership) — don't use a Domain Admin for daily operations.
@@ -240,6 +244,7 @@ Each operation writes:
 | `tests/Invoke-SmokeTest.ps1` | End-to-end in Lab mode, **zero dependencies** (runs anywhere) | 47 checks |
 | `tests/UserLifecycle.Tests.ps1` | Naming, passwords, onboarding, offboarding, audit chain (Lab mode) | 27 |
 | `tests/Backends.Tests.ps1` | **Active Directory and Microsoft Graph backends with mocked cmdlets**: exact `New-ADUser` parameters, privileged groups by SID in a Spanish DC (`Admins. del dominio`), `adminCount`, LDAP escaping, inclusive expiry date, Graph endpoints and request bodies, partial failures | 25 |
+| `tests/Initialize-TestDomain.Tests.ps1` | The lab-setup script against a **fake, stateful AD** (OU tree order, groups, shares, locked-down NTFS, idempotency, `-WhatIf`) | 7 |
 | `tests/WebUI.Tests.ps1` | Starts the **real web server** and attacks it: missing/wrong token, forged `Host` (DNS rebinding), cross-origin POST (CSRF), form posts, oversized and chunked bodies, path traversal, then a full onboarding/offboarding through the API | 19 |
 
 ```powershell
@@ -264,10 +269,10 @@ GitHub Actions runs everything on **Windows PowerShell 5.1**, **PowerShell 7 on 
 │   │   ├── Cloud.ps1                #   Microsoft Graph  | Lab
 │   │   └── LabStore.ps1             #   simulated directory + tenant
 │   └── Web/                         # dependency-free HTML/CSS/JS UI
-├── scripts/                         # Start-UI.ps1, Invoke-BulkOnboarding.ps1
+├── scripts/                         # Start-UI.ps1, Invoke-BulkOnboarding.ps1, Initialize-TestDomain.ps1
 ├── examples/                        # sample CSVs
 ├── tests/                           # smoke test + Pester (Lab, mocked AD/Graph, web security)
-└── docs/img/                        # screenshots
+└── docs/                            # MANUAL.md (Spanish guide) + screenshots
 ```
 
 ## Roadmap
