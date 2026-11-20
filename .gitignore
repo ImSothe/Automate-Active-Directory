@@ -1,0 +1,6 @@
+# Local data: lab directory, audit log and reports (may contain personal data)
+data/
+# Your real configuration (copy it from settings.example.json)
+config/settings.json
+*.tmp
+TestResults/

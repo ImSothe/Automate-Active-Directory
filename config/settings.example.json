@@ -1,0 +1,113 @@
+{
+  "Mode": "Lab",
+  "Organization": "Contoso Iberia",
+
+  "Domain": {
+    "NetBIOSName": "CONTOSO",
+    "DnsRoot": "contoso.local",
+    "UpnSuffix": "contoso.com",
+    "EmailDomain": "contoso.com",
+    "Server": "",
+    "UsersBaseOU": "OU=Usuarios,DC=contoso,DC=local",
+    "ArchiveOU": "OU=Bajas,DC=contoso,DC=local"
+  },
+
+  "Naming": {
+    "Pattern": "FirstInitialLastName",
+    "MaxLength": 20
+  },
+
+  "Password": {
+    "Length": 16,
+    "ChangeAtLogon": true
+  },
+
+  "HomeFolder": {
+    "Enabled": true,
+    "Root": "\\\\fs01.contoso.local\\home$",
+    "Drive": "H:",
+    "Rights": "Modify"
+  },
+
+  "BaseGroups": [ "GG-Todos" ],
+
+  "Departments": [
+    {
+      "Name": "Ventas",
+      "OU": "OU=Ventas,OU=Usuarios,DC=contoso,DC=local",
+      "Groups": [ "GG-Ventas", "GG-CRM" ],
+      "Shares": [ { "Path": "\\\\fs01.contoso.local\\Departamentos\\Ventas", "Rights": "Modify" } ],
+      "Licenses": [ "SPE_E3" ]
+    },
+    {
+      "Name": "Marketing",
+      "OU": "OU=Marketing,OU=Usuarios,DC=contoso,DC=local",
+      "Groups": [ "GG-Marketing" ],
+      "Shares": [ { "Path": "\\\\fs01.contoso.local\\Departamentos\\Marketing", "Rights": "Modify" } ],
+      "Licenses": [ "SPE_E3" ]
+    },
+    {
+      "Name": "Sistemas",
+      "OU": "OU=Sistemas,OU=Usuarios,DC=contoso,DC=local",
+      "Groups": [ "GG-Sistemas", "GG-VPN" ],
+      "Shares": [ { "Path": "\\\\fs01.contoso.local\\Departamentos\\Sistemas", "Rights": "Modify" } ],
+      "Licenses": [ "SPE_E3" ]
+    },
+    {
+      "Name": "Recursos Humanos",
+      "OU": "OU=RRHH,OU=Usuarios,DC=contoso,DC=local",
+      "Groups": [ "GG-RRHH" ],
+      "Shares": [ { "Path": "\\\\fs01.contoso.local\\Departamentos\\RRHH", "Rights": "Modify" } ],
+      "Licenses": [ "SPE_E3" ]
+    },
+    {
+      "Name": "Finanzas",
+      "OU": "OU=Finanzas,OU=Usuarios,DC=contoso,DC=local",
+      "Groups": [ "GG-Finanzas" ],
+      "Shares": [
+        { "Path": "\\\\fs01.contoso.local\\Departamentos\\Finanzas", "Rights": "Modify" },
+        { "Path": "\\\\fs01.contoso.local\\Departamentos\\Ventas", "Rights": "ReadAndExecute" }
+      ],
+      "Licenses": [ "SPE_E3", "POWER_BI_PRO" ]
+    }
+  ],
+
+  "TitleRules": [
+    { "Match": "Jefe*",          "Groups": [ "GG-Responsables" ] },
+    { "Match": "Director*",      "Groups": [ "GG-Responsables", "GG-Direccion" ] },
+    { "Match": "*Becari*",       "Groups": [ "GG-Becarios" ], "Licenses": [ "O365_BUSINESS_ESSENTIALS" ] },
+    { "Match": "Administrador*", "Groups": [ "GG-VPN" ] }
+  ],
+
+  "Offboarding": {
+    "DescriptionPrefix": "BAJA",
+    "RemoveShareAccess": true
+  },
+
+  "Graph": {
+    "Enabled": true,
+    "Auth": "Certificate",
+    "TenantId": "00000000-0000-0000-0000-000000000000",
+    "ClientId": "00000000-0000-0000-0000-000000000000",
+    "CertificateThumbprint": "",
+    "UsageLocation": "ES",
+    "SyncWaitSeconds": 120,
+    "SyncPollSeconds": 15,
+    "DeltaSyncServer": "",
+    "RevokeSessionsOnOffboarding": true,
+    "RemoveLicensesOnOffboarding": true
+  },
+
+  "Audit": {
+    "Path": "../data/audit"
+  },
+
+  "Lab": {
+    "DataPath": "../data/lab-directory.json",
+    "SkuCapacity": {
+      "SPE_E3": { "Enabled": 50, "Consumed": 41 },
+      "POWER_BI_PRO": { "Enabled": 5, "Consumed": 5 },
+      "O365_BUSINESS_ESSENTIALS": { "Enabled": 10, "Consumed": 2 }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="lc-token" content="{{TOKEN}}">
+  <title>Altas y Bajas</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/favicon.svg" alt="" width="28" height="28">
+      <div>
+        <div class="brand-title">Altas y Bajas</div>
+        <div class="brand-sub" id="org">&nbsp;</div>
+      </div>
+    </div>
+    <div class="badges" id="badges"></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" role="tab" data-tab="onboarding" aria-selected="true">Alta</button>
+    <button class="tab" role="tab" data-tab="offboarding" aria-selected="false">Baja</button>
+    <button class="tab" role="tab" data-tab="audit" aria-selected="false">Auditoría</button>
+  </nav>
+
+  <main>
+    <!-- ALTA -->
+    <section id="tab-onboarding" class="panel active">
+      <div class="grid">
+        <form id="onb-form" class="card" autocomplete="off" novalidate>
+          <h2>Nuevo empleado</h2>
+          <div class="row2">
+            <label>Nombre *<input name="givenName" required maxlength="64" placeholder="Juan"></label>
+            <label>Apellidos *<input name="surname" required maxlength="64" placeholder="García López"></label>
+          </div>
+          <div class="row2">
+            <label>Departamento *<select name="department" id="dept" required></select></label>
+            <label>Puesto *<input name="title" required maxlength="64" placeholder="Comercial" list="title-hints"></label>
+          </div>
+          <datalist id="title-hints"></datalist>
+          <div class="row2">
+            <label>Responsable <input name="manager" maxlength="20" placeholder="usuario (p. ej. lmartinez)"></label>
+            <label>Nº de empleado <input name="employeeId" maxlength="16" placeholder="E-1042"></label>
+          </div>
+          <div class="row2">
+            <label>Fin de contrato <input name="endDate" type="date"><span class="hint">Solo temporales / becarios</span></label>
+            <label>Ticket <input name="ticket" maxlength="32" placeholder="RRHH-1234"></label>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn primary" id="onb-preview">Revisar plan</button>
+            <button type="button" class="btn" id="onb-reset">Limpiar</button>
+          </div>
+        </form>
+
+        <div id="onb-side">
+          <div class="card empty" id="onb-placeholder">
+            <p>Rellena los datos y pulsa <strong>Revisar plan</strong>. Verás exactamente qué se va a crear antes de tocar nada.</p>
+          </div>
+          <div class="card hidden" id="onb-plan"></div>
+          <div class="card hidden" id="onb-result"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BAJA -->
+    <section id="tab-offboarding" class="panel">
+      <div class="grid">
+        <div class="card">
+          <h2>Buscar empleado</h2>
+          <label class="search">Nombre, usuario, correo o nº de empleado
+            <input id="off-search" type="search" maxlength="64" placeholder="garcía">
+          </label>
+          <ul class="userlist" id="off-results"></ul>
+        </div>
+        <div id="off-side">
+          <div class="card empty" id="off-placeholder"><p>Selecciona a la persona que causa baja para ver qué se le va a retirar.</p></div>
+          <div class="card hidden" id="off-plan"></div>
+          <div class="card hidden" id="off-result"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUDITORÍA -->
+    <section id="tab-audit" class="panel">
+      <div class="card">
+        <div class="card-head">
+          <h2>Registro de operaciones</h2>
+          <button class="btn" id="audit-verify">Verificar integridad del log</button>
+        </div>
+        <div id="audit-verify-result"></div>
+        <div class="table-wrap"><table class="table" id="audit-table">
+          <thead><tr><th>Fecha</th><th>Operación</th><th>Usuario</th><th>Estado</th><th>Operador</th><th>Ticket</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+      <div class="card" id="licenses-card">
+        <h2>Licencias de Microsoft 365</h2>
+        <div id="licenses"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast hidden" id="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
